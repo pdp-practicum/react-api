@@ -9,19 +9,23 @@ import Info from './Info';
 interface UsersState {
   users: IEntity.User[];
   isLoading: boolean;
-  userId:any
+  userId: any;
+  selectedUser: IEntity.User | null;
+  isEditModalVisible: boolean;
 }
 
 export default class Users extends Component<any, UsersState> {
   state: UsersState = {
     users: [],
     isLoading: true,
-    userId:null
+    userId: null,
+    selectedUser: null,
+    isEditModalVisible: false
   };
 
-  handleBack = ()=>{
-    this.setState({userId:null})
-  }
+  handleBack = () => {
+    this.setState({ userId: null });
+  };
 
   onLoadUsers = async () => {
     try {
@@ -44,6 +48,7 @@ export default class Users extends Component<any, UsersState> {
 
     this.onLoadUsers();
   }
+
   onDeleteUser = async (userId: number) => {
     try {
       this.setState({ isLoading: true });
@@ -51,114 +56,120 @@ export default class Users extends Component<any, UsersState> {
       const updatedUsers = this.state.users.filter(user => user.id !== userId);
       this.setState({ users: updatedUsers, isLoading: false });
     } catch (err) {
-
       console.error('Error deleting user:', err);
       this.setState({ isLoading: false });
     }
   };
 
-  info = () => {
-    Modal.info({
-      title: 'This is a notification message',
-      content: (
-        <div>
-          <p>some messages...some messages...</p>
-          <p>some messages...some messages...</p>
-        </div>
-      ),
-      onOk() {},
-    });
+  onEditUser = (user: IEntity.User) => {
+    this.setState({ selectedUser: user, isEditModalVisible: true });
+  };
+
+  handleEditModalOk = () => {
+    // Implement the logic to update user information (e.g., make an API call)
+    // After successful update, close the modal and update the users list
+    // You can use this.setState to close the modal and update the users list
+    // Example: this.setState({ isEditModalVisible: false, users: updatedUsers });
+  };
+
+  handleEditModalCancel = () => {
+    // Close the modal without saving changes
+    this.setState({ isEditModalVisible: false, selectedUser: null });
   };
 
   render() {
-    const { isLoading, users } = this.state;
+    const { isLoading, users, isEditModalVisible, selectedUser } = this.state;
 
-    if(this.state.userId){
-      return (
-        <>
-          <Info onBack={this.handleBack} userId={this.state.userId}/>
-        </>
-      )
+    if (this.state.userId) {
+      return <Info onBack={this.handleBack} userId={this.state.userId} />;
     }
 
     return (
-      <div id='usere'>
-      <div className="mx-auto w-full">
-        {!!users.length  || users.length === 0 ?(
-          <Table
-          className="your-custom-class h-[700px]"
-            bordered
-            rowKey="id"
-            columns={[
-              {
-                title: '🆔',
-                dataIndex: 'id',
-                width: 40
-              },
-              {
-                title: 'Name 🌀',
-                dataIndex: 'name'
-              },
-              {
-                title: 'Username 🤦🏻',
-                dataIndex: 'username'
-              },
-              {
-                title: 'Email 📧',
-                dataIndex: 'email'
-              },
-              {
-                title: 'City 🌆',
-                dataIndex: 'city'
-              },
-              {
-                title: 'ZipCode 🔒',
-                dataIndex: 'zipcode',
-                render: zipcode => <Tag>🇺🇿 {zipcode}</Tag>
-              },
-              {
-                title: 'Website ⛬',
-                dataIndex: 'website'
-              },
-              {
-                title: 'Company 💼',
-                dataIndex: 'company'
-              },
-              {
-                title: 'Actions',
-                dataIndex: '',
-                render: (value, user) => (
-                  <Button.Group>
-                   <Button onClick={() => {
-  this.setState({ userId: user.id });
-  window.history.replaceState({}, '', `/${user.id}`);
-}}>Info</Button>
-
-
-<Button onClick={this.info}>Edit</Button>
-                    <Button type="primary" danger onClick={() => this.onDeleteUser(user.id)}>
-                      Delete
-                    </Button>
-                  </Button.Group>
-                )
-              }
-            ]}
-            dataSource={users}
-            pagination={false}
-            rowClassName="text-center"
-          />
-        ) :(
-          <h1>Tugadi</h1>
-        )
-        }
-        <Spinner visible={isLoading} />
-        <Modal />
+      <div id="usere">
+        <div className="mx-auto w-full">
+          {!!users.length || users.length === 0 ? (
+            <Table
+              className="your-custom-class h-[700px]"
+              bordered
+              rowKey="id"
+              columns={[
+                {
+                  title: '🆔',
+                  dataIndex: 'id',
+                  width: 40
+                },
+                {
+                  title: 'Name 🌀',
+                  dataIndex: 'name'
+                },
+                {
+                  title: 'Username 🤦🏻',
+                  dataIndex: 'username'
+                },
+                {
+                  title: 'Email 📧',
+                  dataIndex: 'email'
+                },
+                {
+                  title: 'City 🌆',
+                  dataIndex: 'city'
+                },
+                {
+                  title: 'ZipCode 🔒',
+                  dataIndex: 'zipcode',
+                  render: zipcode => <Tag>🇺🇿 {zipcode}</Tag>
+                },
+                {
+                  title: 'Website ⛬',
+                  dataIndex: 'website'
+                },
+                {
+                  title: 'Company 💼',
+                  dataIndex: 'company'
+                },
+                {
+                  title: 'Actions',
+                  dataIndex: '',
+                  render: (value, user) => (
+                    <Button.Group>
+                      <Button
+                        onClick={() => {
+                          this.setState({ userId: user.id });
+                          window.history.replaceState({}, '', `/${user.id}`);
+                        }}
+                      >
+                        Info
+                      </Button>
+                      <Button onClick={() => this.onEditUser(user)}>Edit</Button>
+                      <Button type="primary" danger onClick={() => this.onDeleteUser(user.id)}>
+                        Delete
+                      </Button>
+                    </Button.Group>
+                  )
+                }
+              ]}
+              dataSource={users}
+              pagination={false}
+              rowClassName="text-center"
+            />
+          ) : (
+            <h1>Tugadi</h1>
+          )}
+          <Spinner visible={isLoading} />
+          <Modal visible={isEditModalVisible} onOk={this.handleEditModalOk} onCancel={this.handleEditModalCancel}>
+            {selectedUser && (
+              <>
+                <h1>Edit User</h1>
+                <form>
+                  <label>Name:</label>
+                  <input type="text" defaultValue={selectedUser.name} />
+                  {/* Add other form fields here */}
+                </form>
+              </>
+            )}
+          </Modal>
+        </div>
       </div>
-     </div>
     );
   }
-  Info(id: number): void {
-    throw new Error('Method not implemented.');
-  }
 }
-//window.history.replaceState({}, '', `/${user.id}`)
