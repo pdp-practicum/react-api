@@ -36,12 +36,24 @@ export default class Users extends Component<any, UsersState> {
 
     this.onLoadUsers();
   }
+  onDeleteUser = async (userId: number) => {
+    try {
 
+      this.setState({ isLoading: true });
+
+      const updatedUsers = this.state.users.filter(user => user.id !== userId);
+      this.setState({ users: updatedUsers, isLoading: false });
+    } catch (err) {
+ 
+      console.error('Error deleting user:', err);
+      this.setState({ isLoading: false });
+    }
+  }
   render() {
     const { isLoading, users } = this.state;
 
     return (
-      <div className="mx-auto w-[1400px]">
+      <div className="mx-auto w-full">
         {!!users.length && (
           <Table
             bordered
@@ -88,7 +100,7 @@ export default class Users extends Component<any, UsersState> {
                   <Button.Group>
                     <Button onClick={() => window.history.replaceState({}, '', `/${user.id}`)}>Info</Button>
                     <Button>Edit</Button>
-                    <Button type="primary" danger>
+                    <Button type="primary" danger onClick={() => this.onDeleteUser(user.id)}>
                       Delete
                     </Button>
                   </Button.Group>
