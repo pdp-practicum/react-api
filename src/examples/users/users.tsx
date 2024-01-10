@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react'; // Import React
 import { Button, Modal, Table, Tag } from 'antd';
 import { IEntity } from './types';
 import * as Mappers from './mappers';
@@ -8,7 +8,7 @@ import Info from './Info';
 interface UsersState {
   users: IEntity.User[];
   isLoading: boolean;
-  userId: any;
+  userId: number | null; // Change the type to 'number | null'
   selectedUser: IEntity.User | null;
   isEditModalVisible: boolean;
   // Add state properties for editing fields
@@ -76,11 +76,10 @@ export default class Users extends Component<any, UsersState> {
     }
   };
 
-  onEditUser = (user: IEntity.User) => {
+  onEditUser = (user: IEntity.User) => { // Change the argument type to IEntity.User
     this.setState({
       selectedUser: user,
       isEditModalVisible: true,
-      // Initialize editing fields with user's current values
       editName: user.name,
       editUsername: user.username,
       editEmail: user.email,
@@ -91,16 +90,29 @@ export default class Users extends Component<any, UsersState> {
     });
   };
 
-  handleEditModalOk = () => {
-    // Implement the logic to update user information (e.g., make an API call)
-    // After successful update, close the modal and update the users list
-    // You can use this.setState to close the modal and update the users list
-    // Example: this.setState({ isEditModalVisible: false, users: updatedUsers });
+  onCloseEditModal = () => {
+    // Close the Edit modal
+    this.setState({ selectedUser: null, isEditModalVisible: false });
   };
 
-  handleEditModalCancel = () => {
+  handleEditSave = () => {
+    const { users, selectedUser, editName, editUsername, editEmail, editCity, editZipCode, editWebsite, editCompany } = this.state;
+    const updatedUsers = users.map((user) =>
+      user.id === selectedUser?.id
+        ? {
+            ...user,
+            name: editName,
+            username: editUsername,
+            email: editEmail,
+            city: editCity,
+            zipcode: editZipCode,
+            website: editWebsite,
+            company: editCompany,
+          }
+        : user
+    );
 
-    this.setState({ isEditModalVisible: false, selectedUser: null });
+    this.setState({ users: updatedUsers, isEditModalVisible: false });
   };
 
   render() {
@@ -112,7 +124,6 @@ export default class Users extends Component<any, UsersState> {
           <Info onBack={this.handleBack} userId={this.state.userId} />
         </>
       );
-
     }
 
     return (
@@ -164,6 +175,7 @@ export default class Users extends Component<any, UsersState> {
                   render: (value, user) => (
                     <Button.Group>
                       <Button
+                        className="bg-yellow-500 hover:text-black"
                         onClick={() => {
                           this.setState({ userId: user.id });
                           window.history.replaceState({}, '', `/${user.id}`);
@@ -187,14 +199,17 @@ export default class Users extends Component<any, UsersState> {
             <h1>Tugadi</h1>
           )}
           <Spinner visible={isLoading} />
-          <Modal />
-          <Modal visible={isEditModalVisible} onOk={this.handleEditModalOk} onCancel={this.handleEditModalCancel}>
+          <Modal visible={isEditModalVisible} onOk={this.handleEditSave} onCancel={this.onCloseEditModal}>
             {selectedUser && (
               <>
                 <h1>Edit User</h1>
                 <form>
                   <label>Name:</label>
-                  <input type="text" defaultValue={selectedUser.name} />
+                  <input
+                    type="text"
+                    value={editName} // Use 'value' instead of 'defaultValue'
+                    onChange={(e) => this.setState({ editName: e.target.value })}
+                  />
                   {/* Add other form fields here */}
                 </form>
               </>

@@ -82,3 +82,4 @@ const Info: React.FC<InfoProps> = (props) => {
 };
 
 export default Info;
+  
