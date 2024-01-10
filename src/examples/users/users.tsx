@@ -36,14 +36,26 @@ export default class Users extends Component<any, UsersState> {
 
     this.onLoadUsers();
   }
+  onDeleteUser = async (userId: number) => {
+    try {
 
+      this.setState({ isLoading: true });
+
+      const updatedUsers = this.state.users.filter(user => user.id !== userId);
+      this.setState({ users: updatedUsers, isLoading: false });
+    } catch (err) {
+
+      console.error('Error deleting user:', err);
+      this.setState({ isLoading: false });
+    }
+  }
   render() {
     const { isLoading, users } = this.state;
 
     return (
-     <div className="w-100vh grid place-items-center">
-       <div className=''>
-        {!!users.length && (
+      <div>
+      <div className="mx-auto w-full">
+        {!!users.length  || users.length === 0 ?(
           <Table
           className="your-custom-class h-[700px]"
             bordered
@@ -90,7 +102,7 @@ export default class Users extends Component<any, UsersState> {
                   <Button.Group>
                     <Button onClick={() => window.history.replaceState({}, '', `/${user.id}`)}>Info</Button>
                     <Button>Edit</Button>
-                    <Button type="primary" danger>
+                    <Button type="primary" danger onClick={() => this.onDeleteUser(user.id)}>
                       Delete
                     </Button>
                   </Button.Group>
@@ -101,7 +113,13 @@ export default class Users extends Component<any, UsersState> {
             pagination={false}
             rowClassName="text-center"
           />
-        )}
+
+        ) :(
+          <h1>Tugadi</h1>
+        )
+
+
+        }
         <Spinner visible={isLoading} />
         <Modal />
       </div>
