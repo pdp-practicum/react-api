@@ -41,9 +41,11 @@ export default class Users extends Component<any, UsersState> {
     const { isLoading, users } = this.state;
 
     return (
-      <div className="mx-auto w-[1400px]">
+     <div className="w-100vh grid place-items-center">
+       <div className=''>
         {!!users.length && (
           <Table
+          className="your-custom-class h-[700px]"
             bordered
             rowKey="id"
             columns={[
@@ -103,6 +105,7 @@ export default class Users extends Component<any, UsersState> {
         <Spinner visible={isLoading} />
         <Modal />
       </div>
+     </div>
     );
   }
 }
