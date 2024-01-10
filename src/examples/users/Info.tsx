@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Spin } from 'antd';
 
 interface UserInfo {
   id: number;
   name: string;
-
 }
 
 interface InfoProps {
   userId: number;
-  onBack: () => void
+  onBack: () => void;
 }
 
 const Info: React.FC<InfoProps> = (props) => {
-  const { userId } = props;
-  const { onBack } = props;
+  const { userId, onBack } = props;
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<UserInfo | null>(null);
 
@@ -35,19 +34,19 @@ const Info: React.FC<InfoProps> = (props) => {
 
   return (
     <div>
-      {isLoading ? (
-        <p>Loading user information...</p>
-      ) : user ? (
-        <div>
-          <h1 onClick={()=>{
-           onBack()
-          }}>User ID: {userId}</h1>
-          <p>Name: {user.name}</p>
-          {/* Add other user information as needed */}
-        </div>
-      ) : (
-        <p>No user information available</p>
-      )}
+      <Spin spinning={isLoading} size="large">
+        {user ? (
+          <div  >
+            <h1 onClick={() => {
+              onBack();
+            }}>User ID: {userId}</h1>
+            <p>Name: {user.name}</p>
+
+          </div>
+        ) : (
+          <p>No user information available</p>
+        )}
+      </Spin>
     </div>
   );
 };
