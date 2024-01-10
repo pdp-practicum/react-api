@@ -57,7 +57,18 @@ export default class Users extends Component<any, UsersState> {
     }
   };
 
-
+  info = () => {
+    Modal.info({
+      title: 'This is a notification message',
+      content: (
+        <div>
+          <p>some messages...some messages...</p>
+          <p>some messages...some messages...</p>
+        </div>
+      ),
+      onOk() {},
+    });
+  };
 
   render() {
     const { isLoading, users } = this.state;
@@ -124,7 +135,7 @@ export default class Users extends Component<any, UsersState> {
 }}>Info</Button>
 
 
-                    <Button>Edit</Button>
+<Button onClick={this.info}>Edit</Button>
                     <Button type="primary" danger onClick={() => this.onDeleteUser(user.id)}>
                       Delete
                     </Button>
