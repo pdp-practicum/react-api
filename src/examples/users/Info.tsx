@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Spin, Table, Tag } from 'antd';
-import * as Mappers from './mappers'; // Import Mappers (update the path accordingly)
+import * as Mappers from './mappers';
 
 interface UserInfo {
   id: number;
@@ -92,8 +92,9 @@ const Info: React.FC<InfoProps> = (props) => {
    <div id="usere">
      <div className="mx-auto w-full">
        <Spin spinning={isLoading} size="large">
+
          <Table
-           dataSource={user ? [user] : []} 
+           dataSource={user ? [user] : []}
            columns={columns}
            pagination={false}
            rowClassName="text-center"
