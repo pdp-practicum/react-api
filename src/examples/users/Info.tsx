@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Table, Tag } from 'antd';
+import { Table, Button } from 'antd';
+import { CaretLeftOutlined } from '@ant-design/icons';
 
 interface UserInfo {
   id: number;
   name: string;
+  isLoading: boolean;
   username: string;
   email: string;
   address: {
-    city: string;
+  city: string;
   };
   phone: string;
   website: string;
@@ -29,6 +31,9 @@ const Info: React.FC<InfoProps> = (props) => {
 
   useEffect(() => {
     const fetchUserInfo = async () => {
+      setIsLoading(true);
+      await new Promise((res) => setTimeout(() => res(20), 500));
+
       try {
         const { data }: any = await axios.get(`https://jsonplaceholder.typicode.com/users/${userId}`);
         setUser(data);
@@ -70,8 +75,10 @@ const Info: React.FC<InfoProps> = (props) => {
       {isLoading ? (
         <p>Loading user information...</p>
       ) : user ? (
-        <div>
-          <h1 onClick={onBack}>User ID: {userId}</h1>
+        <div className="">
+          <Button size="large" type="primary" icon={<CaretLeftOutlined />} onClick={onBack}>
+            Next {userId}
+          </Button>
           <Table dataSource={dataSource} columns={columns} pagination={false} />
         </div>
       ) : (
@@ -82,4 +89,3 @@ const Info: React.FC<InfoProps> = (props) => {
 };
 
 export default Info;
-  

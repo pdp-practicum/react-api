@@ -1,9 +1,10 @@
-import React, { Component } from 'react'; // Import React
+import { Component } from 'react';
 import { Button, Modal, Table, Tag } from 'antd';
 import { IEntity } from './types';
 import * as Mappers from './mappers';
 import Spinner from './spinner';
 import Info from './Info';
+import { UserOutlined } from '@ant-design/icons';
 
 interface UsersState {
   users: IEntity.User[];
@@ -11,7 +12,6 @@ interface UsersState {
   userId: number | null; // Change the type to 'number | null'
   selectedUser: IEntity.User | null;
   isEditModalVisible: boolean;
-  // Add state properties for editing fields
   editName: string;
   editUsername: string;
   editEmail: string;
@@ -28,14 +28,14 @@ export default class Users extends Component<any, UsersState> {
     userId: null,
     selectedUser: null,
     isEditModalVisible: false,
-    // Initialize state properties for editing fields
+
     editName: '',
     editUsername: '',
     editEmail: '',
     editCity: '',
     editZipCode: '',
     editWebsite: '',
-    editCompany: '',
+    editCompany: ''
   };
 
   handleBack = () => {
@@ -45,7 +45,7 @@ export default class Users extends Component<any, UsersState> {
   onLoadUsers = async () => {
     try {
       this.setState({ isLoading: true });
-      await new Promise((res) => setTimeout(() => res(20), 500));
+      await new Promise(res => setTimeout(() => res(20), 500));
 
       const res = await fetch('https://jsonplaceholder.typicode.com/users');
       const data: any[] = await res.json();
@@ -68,7 +68,7 @@ export default class Users extends Component<any, UsersState> {
     try {
       this.setState({ isLoading: true });
 
-      const updatedUsers = this.state.users.filter((user) => user.id !== userId);
+      const updatedUsers = this.state.users.filter(user => user.id !== userId);
       this.setState({ users: updatedUsers, isLoading: false });
     } catch (err) {
       console.error('Error deleting user:', err);
@@ -80,43 +80,43 @@ export default class Users extends Component<any, UsersState> {
     this.setState({
       selectedUser: user,
       isEditModalVisible: true,
+      // Initialize editing fields with user's current values
       editName: user.name,
       editUsername: user.username,
       editEmail: user.email,
       editCity: user.city,
       editZipCode: user.zipcode,
       editWebsite: user.website,
-      editCompany: user.company,
+      editCompany: user.company
     });
   };
 
-  onCloseEditModal = () => {
-    // Close the Edit modal
-    this.setState({ selectedUser: null, isEditModalVisible: false });
+  handleEditModalOk = () => {
+    // Implement the logic to update user information (e.g., make an API call)
+    // After successful update, close the modal and update the users list
+    // You can use this.setState to close the modal and update the users list
+    // Example: this.setState({ isEditModalVisible: false, users: updatedUsers });
   };
 
-  handleEditSave = () => {
-    const { users, selectedUser, editName, editUsername, editEmail, editCity, editZipCode, editWebsite, editCompany } = this.state;
-    const updatedUsers = users.map((user) =>
-      user.id === selectedUser?.id
-        ? {
-            ...user,
-            name: editName,
-            username: editUsername,
-            email: editEmail,
-            city: editCity,
-            zipcode: editZipCode,
-            website: editWebsite,
-            company: editCompany,
-          }
-        : user
-    );
+  handleEditModalCancel = () => {
 
-    this.setState({ users: updatedUsers, isEditModalVisible: false });
+    this.setState({ isEditModalVisible: false, selectedUser: null });
   };
 
   render() {
-    const { isLoading, users, isEditModalVisible, selectedUser, editName, editUsername, editEmail, editCity, editZipCode, editWebsite, editCompany } = this.state;
+    const {
+      isLoading,
+      users,
+      isEditModalVisible,
+      selectedUser,
+      editName,
+      editUsername,
+      editEmail,
+      editCity,
+      editZipCode,
+      editWebsite,
+      editCompany
+    } = this.state;
 
     if (this.state.userId) {
       return (
@@ -138,36 +138,36 @@ export default class Users extends Component<any, UsersState> {
                 {
                   title: '🆔',
                   dataIndex: 'id',
-                  width: 40,
+                  width: 40
                 },
                 {
                   title: 'Name 🌀',
-                  dataIndex: 'name',
+                  dataIndex: 'name'
                 },
                 {
                   title: 'Username 🤦🏻',
-                  dataIndex: 'username',
+                  dataIndex: 'username'
                 },
                 {
                   title: 'Email 📧',
-                  dataIndex: 'email',
+                  dataIndex: 'email'
                 },
                 {
                   title: 'City 🌆',
-                  dataIndex: 'city',
+                  dataIndex: 'city'
                 },
                 {
                   title: 'ZipCode 🔒',
                   dataIndex: 'zipcode',
-                  render: (zipcode) => <Tag>🇺🇿 {zipcode}</Tag>,
+                  render: zipcode => <Tag>🇺🇿 {zipcode}</Tag>
                 },
                 {
                   title: 'Website ⛬',
-                  dataIndex: 'website',
+                  dataIndex: 'website'
                 },
                 {
                   title: 'Company 💼',
-                  dataIndex: 'company',
+                  dataIndex: 'company'
                 },
                 {
                   title: 'Actions',
@@ -188,8 +188,8 @@ export default class Users extends Component<any, UsersState> {
                         Delete
                       </Button>
                     </Button.Group>
-                  ),
-                },
+                  )
+                }
               ]}
               dataSource={users}
               pagination={false}
@@ -199,17 +199,14 @@ export default class Users extends Component<any, UsersState> {
             <h1>Tugadi</h1>
           )}
           <Spinner visible={isLoading} />
-          <Modal visible={isEditModalVisible} onOk={this.handleEditSave} onCancel={this.onCloseEditModal}>
+          <Modal />
+          <Modal visible={isEditModalVisible} onOk={this.handleEditModalOk} onCancel={this.handleEditModalCancel}>
             {selectedUser && (
               <>
                 <h1>Edit User</h1>
                 <form>
                   <label>Name:</label>
-                  <input
-                    type="text"
-                    value={editName} // Use 'value' instead of 'defaultValue'
-                    onChange={(e) => this.setState({ editName: e.target.value })}
-                  />
+                  <input type="text" defaultValue={selectedUser.name} />
                   {/* Add other form fields here */}
                 </form>
               </>
