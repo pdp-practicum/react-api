@@ -4,18 +4,24 @@ import { Button, Modal, Table, Tag } from 'antd';
 import { IEntity } from './types';
 import * as Mappers from './mappers';
 import Spinner from './spinner';
-import { Link } from 'react-router-dom';
+import Info from './Info';
 
 interface UsersState {
   users: IEntity.User[];
   isLoading: boolean;
+  userId:any
 }
 
 export default class Users extends Component<any, UsersState> {
   state: UsersState = {
     users: [],
-    isLoading: true
+    isLoading: true,
+    userId:null
   };
+
+  handleBack = ()=>{
+    this.setState({userId:null})
+  }
 
   onLoadUsers = async () => {
     try {
@@ -45,47 +51,31 @@ export default class Users extends Component<any, UsersState> {
       const updatedUsers = this.state.users.filter(user => user.id !== userId);
       this.setState({ users: updatedUsers, isLoading: false });
     } catch (err) {
+
       console.error('Error deleting user:', err);
       this.setState({ isLoading: false });
     }
   };
 
-  onUserInfo = async (userId: number) => {
-    try {
-      this.setState({ isLoading: true });
 
-      // const updatedUsers = this.state.users.filter(user => user.id !== userId);
-      // this.setState({ users: updatedUsers, isLoading: false });
-
-      const { data }: any = await axios.get(`https://jsonplaceholder.typicode.com/users/${userId}`);
-      console.log(data);
-
-      this.setState({ isLoading: false });
-    } catch (err) {
-      console.error('Error Fetching user info:', err);
-      this.setState({ isLoading: false });
-    }
-  };
-
-  info = (userId: number) => {
-    Modal.info({
-      title: 'User Info',
-      content: (
-        <div className="flex flex-col">
-          <h1>fdsfds</h1>
-        </div>
-      ),
-      onOk() {}
-    });
-  };
 
   render() {
     const { isLoading, users } = this.state;
 
+    if(this.state.userId){
+      return (
+        <>
+          <Info onBack={this.handleBack} userId={this.state.userId}/>
+        </>
+      )
+    }
+
     return (
+      <div id='usere'>
       <div className="mx-auto w-full">
-        {!!users.length && (
+        {!!users.length  || users.length === 0 ?(
           <Table
+          className="your-custom-class h-[700px]"
             bordered
             rowKey="id"
             columns={[
@@ -127,15 +117,18 @@ export default class Users extends Component<any, UsersState> {
                 title: 'Actions',
                 dataIndex: '',
                 render: (value, user) => (
-                  <>
-                    <Button.Group>
-                      <Button onClick={() => this.info(user.id)}>Info</Button>
-                      <Button onClick={() => this.info(user.id)}>Edit</Button>
-                      <Button type="primary" danger onClick={() => this.onDeleteUser(user.id)}>
-                        Delete
-                      </Button>
-                    </Button.Group>
-                  </>
+                  <Button.Group>
+                   <Button onClick={() => {
+  this.setState({ userId: user.id });
+  window.history.replaceState({}, '', `/${user.id}`);
+}}>Info</Button>
+
+
+                    <Button>Edit</Button>
+                    <Button type="primary" danger onClick={() => this.onDeleteUser(user.id)}>
+                      Delete
+                    </Button>
+                  </Button.Group>
                 )
               }
             ]}
@@ -143,11 +136,18 @@ export default class Users extends Component<any, UsersState> {
             pagination={false}
             rowClassName="text-center"
           />
-        )}
+        ) :(
+          <h1>Tugadi</h1>
+        )
+        }
         <Spinner visible={isLoading} />
         <Modal />
       </div>
+     </div>
     );
+  }
+  Info(id: number): void {
+    throw new Error('Method not implemented.');
   }
 }
 //window.history.replaceState({}, '', `/${user.id}`)
