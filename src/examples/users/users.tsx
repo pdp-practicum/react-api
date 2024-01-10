@@ -9,13 +9,17 @@ interface UsersState {
   users: IEntity.User[];
   isLoading: boolean;
   userId: any;
+  selectedUser: IEntity.User | null;
+  isEditModalVisible: boolean;
 }
 
 export default class Users extends Component<any, UsersState> {
   state: UsersState = {
     users: [],
     isLoading: true,
-    userId: null
+    userId: null,
+    selectedUser: null,
+    isEditModalVisible: false
   };
 
   handleBack = () => {
@@ -43,6 +47,7 @@ export default class Users extends Component<any, UsersState> {
 
     this.onLoadUsers();
   }
+
   onDeleteUser = async (userId: number) => {
     try {
       this.setState({ isLoading: true });
@@ -55,8 +60,31 @@ export default class Users extends Component<any, UsersState> {
     }
   };
 
+  onEditUser = (user: IEntity.User) => {
+    this.setState({ selectedUser: user, isEditModalVisible: true });
+  };
+
+  handleEditModalOk = () => {
+
+    const { selectedUser } = this.state;
+    const updatedUsers = this.state.users.map(user =>
+      user.id === selectedUser?.id ? { ...user, name: } : user
+    );
+
+    this.setState({
+      users: updatedUsers,
+      isEditModalVisible: false,
+      selectedUser: null,
+    });
+  };
+
+  handleEditModalCancel = () => {
+
+    this.setState({ isEditModalVisible: false, selectedUser: null });
+  };
+
   render() {
-    const { isLoading, users } = this.state;
+    const { isLoading, users, isEditModalVisible, selectedUser } = this.state;
 
     if (this.state.userId) {
       return (
@@ -64,6 +92,7 @@ export default class Users extends Component<any, UsersState> {
           <Info onBack={this.handleBack} userId={this.state.userId} />
         </>
       );
+
     }
 
     return (
@@ -123,7 +152,8 @@ export default class Users extends Component<any, UsersState> {
                         Info
                       </Button>
 
-                      <Button>Edit</Button>
+
+                      <Button onClick={() => this.onEditUser(user)}>Edit</Button>
                       <Button type="primary" danger onClick={() => this.onDeleteUser(user.id)}>
                         Delete
                       </Button>
@@ -140,12 +170,20 @@ export default class Users extends Component<any, UsersState> {
           )}
           <Spinner visible={isLoading} />
           <Modal />
+          <Modal visible={isEditModalVisible} onOk={this.handleEditModalOk} onCancel={this.handleEditModalCancel}>
+            {selectedUser && (
+              <>
+                <h1>Edit User</h1>
+                <form>
+                  <label>Name:</label>
+                  <input type="text" defaultValue={selectedUser.name} />
+
+                </form>
+              </>
+            )}
+          </Modal>
         </div>
       </div>
     );
   }
-  Info(id: number): void {
-    throw new Error('Method not implemented.');
-  }
 }
-//window.history.replaceState({}, '', `/${user.id}`)
