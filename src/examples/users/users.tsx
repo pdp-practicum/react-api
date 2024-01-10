@@ -4,6 +4,7 @@ import { Button, Modal, Table, Tag } from 'antd';
 import { IEntity } from './types';
 import * as Mappers from './mappers';
 import Spinner from './spinner';
+import { Link } from 'react-router-dom';
 
 interface UsersState {
   users: IEntity.User[];
@@ -66,6 +67,18 @@ export default class Users extends Component<any, UsersState> {
     }
   };
 
+  info = (userId: number) => {
+    Modal.info({
+      title: 'User Info',
+      content: (
+        <div className="flex flex-col">
+          <h1>fdsfds</h1>
+        </div>
+      ),
+      onOk() {}
+    });
+  };
+
   render() {
     const { isLoading, users } = this.state;
 
@@ -114,13 +127,15 @@ export default class Users extends Component<any, UsersState> {
                 title: 'Actions',
                 dataIndex: '',
                 render: (value, user) => (
-                  <Button.Group>
-                    <Button onClick={() => this.onUserInfo(user.id)}>Info</Button>
-                    <Button>Edit</Button>
-                    <Button type="primary" danger onClick={() => this.onDeleteUser(user.id)}>
-                      Delete
-                    </Button>
-                  </Button.Group>
+                  <>
+                    <Button.Group>
+                      <Button onClick={() => this.info(user.id)}>Info</Button>
+                      <Button onClick={() => this.info(user.id)}>Edit</Button>
+                      <Button type="primary" danger onClick={() => this.onDeleteUser(user.id)}>
+                        Delete
+                      </Button>
+                    </Button.Group>
+                  </>
                 )
               }
             ]}
