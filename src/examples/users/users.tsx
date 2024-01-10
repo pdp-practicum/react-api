@@ -1,19 +1,27 @@
 import { Component } from 'react';
+import axios from 'axios';
 import { Button, Modal, Table, Tag } from 'antd';
 import { IEntity } from './types';
 import * as Mappers from './mappers';
 import Spinner from './spinner';
+import Info from './Info';
 
 interface UsersState {
   users: IEntity.User[];
   isLoading: boolean;
+  userId:any
 }
 
 export default class Users extends Component<any, UsersState> {
   state: UsersState = {
     users: [],
-    isLoading: true
+    isLoading: true,
+    userId:null
   };
+
+  handleBack = ()=>{
+    this.setState({userId:null})
+  }
 
   onLoadUsers = async () => {
     try {
@@ -38,7 +46,6 @@ export default class Users extends Component<any, UsersState> {
   }
   onDeleteUser = async (userId: number) => {
     try {
-
       this.setState({ isLoading: true });
 
       const updatedUsers = this.state.users.filter(user => user.id !== userId);
@@ -48,12 +55,23 @@ export default class Users extends Component<any, UsersState> {
       console.error('Error deleting user:', err);
       this.setState({ isLoading: false });
     }
-  }
+  };
+
+
+
   render() {
     const { isLoading, users } = this.state;
 
+    if(this.state.userId){
+      return (
+        <>
+          <Info onBack={this.handleBack} userId={this.state.userId}/>
+        </>
+      )
+    }
+
     return (
-      <div>
+      <div id='usere'>
       <div className="mx-auto w-full">
         {!!users.length  || users.length === 0 ?(
           <Table
@@ -100,7 +118,9 @@ export default class Users extends Component<any, UsersState> {
                 dataIndex: '',
                 render: (value, user) => (
                   <Button.Group>
-                    <Button onClick={() => window.history.replaceState({}, '', `/${user.id}`)}>Info</Button>
+                    <Button onClick={() => {
+                      this.setState({userId:user.id})
+                    }}>Info</Button>
                     <Button>Edit</Button>
                     <Button type="primary" danger onClick={() => this.onDeleteUser(user.id)}>
                       Delete
@@ -113,12 +133,9 @@ export default class Users extends Component<any, UsersState> {
             pagination={false}
             rowClassName="text-center"
           />
-
         ) :(
           <h1>Tugadi</h1>
         )
-
-
         }
         <Spinner visible={isLoading} />
         <Modal />
@@ -126,4 +143,8 @@ export default class Users extends Component<any, UsersState> {
      </div>
     );
   }
+  Info(id: number): void {
+    throw new Error('Method not implemented.');
+  }
 }
+//window.history.replaceState({}, '', `/${user.id}`)
