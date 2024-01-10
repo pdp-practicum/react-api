@@ -65,26 +65,12 @@ export default class Users extends Component<any, UsersState> {
   };
 
   handleEditModalOk = () => {
-    const { selectedUser } = this.state;
 
-    if (selectedUser) {
-      const updatedUsers = this.state.users.map(user =>
-        user.id === selectedUser.id ? { ...user, name: selectedUser.name } : user
-      );
-
-      this.setState({
-        users: updatedUsers,
-        isEditModalVisible: false,
-        selectedUser: null,
-      });
-    }
   };
-
 
   handleEditModalCancel = () => {
 
     this.setState({ isEditModalVisible: false, selectedUser: null });
-    
   };
 
   render() {
@@ -156,7 +142,7 @@ export default class Users extends Component<any, UsersState> {
                         Info
                       </Button>
 
-
+                      <Button  oncl>Edit</Button>
                       <Button onClick={() => this.onEditUser(user)}>Edit</Button>
                       <Button type="primary" danger onClick={() => this.onDeleteUser(user.id)}>
                         Delete
