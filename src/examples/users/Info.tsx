@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Spin } from 'antd';
+import { Spin, Table, Tag } from 'antd';
+import * as Mappers from './mappers'; // Import Mappers (update the path accordingly)
 
 interface UserInfo {
   id: number;
   name: string;
+  username: string;
+  email: string;
+  city: string;
+  zipcode: string;
+  website: string;
+  company: string;
 }
 
 interface InfoProps {
@@ -12,43 +18,90 @@ interface InfoProps {
   onBack: () => void;
 }
 
+
 const Info: React.FC<InfoProps> = (props) => {
-  const { userId, onBack } = props;
-  const [isLoading, setIsLoading] = useState(true);
-  const [user, setUser] = useState<UserInfo | null>(null);
+ const { userId, onBack } = props;
+ const [isLoading, setIsLoading] = useState(true);
+ const [user, setUser] = useState<UserInfo | null>(null);
 
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const { data }: any = await axios.get(`https://jsonplaceholder.typicode.com/users/${userId}`);
-        setUser(data);
-        setIsLoading(false);
-      } catch (err) {
-        console.error('Error fetching user info:', err);
-        setIsLoading(false);
-      }
-    };
+ useEffect(() => {
+   const fetchUserInfo = async () => {
+     try {
+       setIsLoading(true);
+       await new Promise((res) => setTimeout(() => res(20), 500));
 
-    fetchUserInfo();
-  }, [userId]);
+       const res = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`);
+       const data: any = await res.json();
+       const user = Mappers.User(data);
+       setUser(user);
+       setIsLoading(false);
+     } catch (err) {
+       console.error('Error fetching user info:', err);
+       setIsLoading(false);
+     }
+   };
+
+   fetchUserInfo();
+ }, [userId]);
+
+  const columns = [
+    {
+      title: 'ID',
+      dataIndex: 'id',
+      key: 'id',
+    },
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: 'Username',
+      dataIndex: 'username',
+      key: 'username',
+    },
+    {
+      title: 'Email',
+      dataIndex: 'email',
+      key: 'email',
+    },
+    {
+      title: 'City',
+      dataIndex: 'city',
+      key: 'city',
+    },
+    {
+      title: 'ZipCode',
+      dataIndex: 'zipcode',
+      key: 'zipcode',
+      render: (zipcode: string) => <Tag>{zipcode}</Tag>,
+    },
+    {
+      title: 'Website',
+      dataIndex: 'website',
+      key: 'website',
+    },
+    {
+      title: 'Company',
+      dataIndex: 'company',
+      key: 'company',
+    },
+  ];
 
   return (
-    <div>
-      <Spin spinning={isLoading} size="large">
-        {user ? (
-          <div  >
-            <h1 onClick={() => {
-              onBack();
-            }}>User ID: {userId}</h1>
-            <p>Name: {user.name}</p>
-
-          </div>
-        ) : (
-          <p>No user information available</p>
-        )}
-      </Spin>
-    </div>
-  );
+   <div id="usere">
+     <div className="mx-auto w-full">
+       <Spin spinning={isLoading} size="large">
+         <Table
+           dataSource={user ? [user] : []} 
+           columns={columns}
+           pagination={false}
+           rowClassName="text-center"
+         />
+       </Spin>
+     </div>
+   </div>
+ );
 };
 
 export default Info;

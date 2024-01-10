@@ -65,22 +65,26 @@ export default class Users extends Component<any, UsersState> {
   };
 
   handleEditModalOk = () => {
-
     const { selectedUser } = this.state;
-    const updatedUsers = this.state.users.map(user =>
-      user.id === selectedUser?.id ? { ...user, name: } : user
-    );
 
-    this.setState({
-      users: updatedUsers,
-      isEditModalVisible: false,
-      selectedUser: null,
-    });
+    if (selectedUser) {
+      const updatedUsers = this.state.users.map(user =>
+        user.id === selectedUser.id ? { ...user, name: selectedUser.name } : user
+      );
+
+      this.setState({
+        users: updatedUsers,
+        isEditModalVisible: false,
+        selectedUser: null,
+      });
+    }
   };
+
 
   handleEditModalCancel = () => {
 
     this.setState({ isEditModalVisible: false, selectedUser: null });
+    
   };
 
   render() {
