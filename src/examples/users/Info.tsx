@@ -1,21 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Table } from 'antd';
-import { User } from './mappers';
+import { Table, Tag } from 'antd';
 
 interface UserInfo {
   id: number;
   name: string;
   username: string;
   email: string;
-  address: string;
-  city: string;
+  address: {
+    city: string;
+  };
   phone: string;
   website: string;
   company: {
     name: string;
   };
-  // Add other properties as needed
 }
 
 interface InfoProps {
@@ -45,23 +44,25 @@ const Info: React.FC<InfoProps> = (props) => {
 
   const columns = [
     {
-      title: `User ID${userId}`,
-      dataIndex: 'name',
-      key: 'name',
-      render: (text: string, record: UserInfo) => (
-        <>
-          <p>Name: {record.name}</p>
-          <p>User Name: {record.username}</p>
-          <p>Email: {record.email}</p>
-          <p>Address: {record.address}</p>
-          <p>City: {record.city}</p>
-          <p>Phone: {record.phone}</p>
-          <p>Website: {record.website}</p>
-          <p>Company Name: {record.company.name}</p>
-        </>
-      ),
+      title: 'Attribute',
+      dataIndex: 'attribute',
+      key: 'attribute',
     },
-    // Add other columns as needed
+    {
+      title: 'Value',
+      dataIndex: 'value',
+      key: 'value',
+    },
+  ];
+
+  const dataSource = [
+    { key: '1', attribute: 'Name', value: user?.name },
+    { key: '2', attribute: 'User Name', value: user?.username },
+    { key: '3', attribute: 'Email', value: user?.email },
+    { key: '4', attribute: 'City', value: user?.address.city },
+    { key: '5', attribute: 'Phone', value: user?.phone },
+    { key: '6', attribute: 'Website', value: user?.website },
+    { key: '7', attribute: 'Company Name', value: user?.company.name },
   ];
 
   return (
@@ -69,14 +70,9 @@ const Info: React.FC<InfoProps> = (props) => {
       {isLoading ? (
         <p>Loading user information...</p>
       ) : user ? (
-        <div className='border-3'>
-          <Table
-            bordered
-            columns={columns}
-            dataSource={[user]} // Wrap user in an array to display a single row in the table
-            pagination={false}
-          />
-          {/* Add other user information as needed */}
+        <div>
+          <h1 onClick={onBack}>User ID: {userId}</h1>
+          <Table dataSource={dataSource} columns={columns} pagination={false} />
         </div>
       ) : (
         <p>No user information available</p>
