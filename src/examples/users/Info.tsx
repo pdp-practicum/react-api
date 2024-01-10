@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import * as Mappers from './mappers';
 
 interface UserInfo {
   id: number;

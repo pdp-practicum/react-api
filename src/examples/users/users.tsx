@@ -142,7 +142,7 @@ export default class Users extends Component<any, UsersState> {
                         Info
                       </Button>
 
-                      <Button  oncl>Edit</Button>
+                     
                       <Button onClick={() => this.onEditUser(user)}>Edit</Button>
                       <Button type="primary" danger onClick={() => this.onDeleteUser(user.id)}>
                         Delete
